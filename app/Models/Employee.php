@@ -10,8 +10,8 @@ class Employee extends Model
     //
     use HasFactory;
 
-    // disable automatic timestamps (table has no created_at/updated_at)
-    public $timestamps = false;
+   
+    public $timestamps = true;
 
     public $incrementing = false;
     protected $keyType = 'string';
@@ -28,7 +28,6 @@ class Employee extends Model
     {
         parent::boot();
 
-        // Generate UUID automatically
         static::creating(function ($model) {
             if (empty($model->{$model->getKeyName()})) {
                 $model->{$model->getKeyName()} = (string) Str::uuid();

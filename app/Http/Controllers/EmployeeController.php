@@ -23,10 +23,9 @@ class EmployeeController extends Controller
 
     public function store(EmployeeRequest $request)
     {
-        // log incoming payload
+       
         Log::info('Employee store payload', $request->all());
 
-     
 
         try {
             $employee = $this->employeeService->create($request->validated());
@@ -43,9 +42,9 @@ class EmployeeController extends Controller
         return response()->json($this->employeeService->find($id));
     }
 
-    public function update(Request $request, string $id)
+    public function update(EmployeeRequest $request, string $id)
     {
-        $employee = $this->employeeService->update($id, $request->all());
+        $employee = $this->employeeService->update($id, $request->validated());
         return response()->json($employee);
     }
 
