@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('last_name');
           $table->string('gender');
           $table->date('date_of_birth');
-          $table->timestamp('created_at');
-          $table->timestamp('updated_at');
+          $table->timestamp('created_at')->nullable();
+$table->timestamp('updated_at')->nullable();
         });
     }
 
