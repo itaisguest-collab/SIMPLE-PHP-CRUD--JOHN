@@ -2,55 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Employee;
-use Illuminate\Http\Request;
-use App\Services\Employee\EmployeeServiceInterface;
-use Illuminate\Support\Facades\Log;
 use App\Http\Requests\EmployeeRequest;
+use App\Http\Resources\EmployeeResource;
+use App\Services\Employee\EmployeeService;
+
 class EmployeeController extends Controller
 {
-    private EmployeeServiceInterface $employeeService;
-
-    public function __construct(EmployeeServiceInterface $employeeService)
-    {
-        $this->employeeService = $employeeService;
-    }
+    public function __construct(
+        private readonly EmployeeService $employeeService
+    ) {}
     
     public function index()
     {
-          return response()->json($this->employeeService->list());
+        return EmployeeResource::collection($this->employeeService->list());
     }
 
     public function store(EmployeeRequest $request)
     {
-       
-        Log::info('Employee store payload', $request->all());
+        $employee = $this->employeeService->create($request->validated());
 
-
-        try {
-            $employee = $this->employeeService->create($request->validated());
-            return response()->json($employee, 201);
-        } catch (\Throwable $e) {
-            Log::error('Employee create failed: '.$e->getMessage());
-            Log::error($e->getTraceAsString());
-            return response()->json(['error' => 'Create failed', 'message' => $e->getMessage()], 500);
-        }
+        return (new EmployeeResource($employee))
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function show(string $id)
     {
-        return response()->json($this->employeeService->find($id));
+        return new EmployeeResource($this->employeeService->find($id));
     }
 
     public function update(EmployeeRequest $request, string $id)
     {
         $employee = $this->employeeService->update($id, $request->validated());
-        return response()->json($employee);
+        return new EmployeeResource($employee);
     }
 
     public function destroy(string $id)
     {
         $this->employeeService->delete($id);
-        return response()->json(null, 204);
+        return response()->noContent();
     }
 }
